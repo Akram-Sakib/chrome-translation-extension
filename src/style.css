@@ -3,3 +3,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* #plasmo-shadow-container {
+  z-index: 99999;
+  left: 80%;
+  top: 20%;
+} */

@@ -1,7 +1,6 @@
 import cssText from "data-text:~style.css"
 import type { PlasmoCSConfig } from "plasmo"
-
-import { CountButton } from "~features/count-button"
+import { useEffect, useState } from "react"
 
 export const config: PlasmoCSConfig = {
   matches: ["https://www.plasmo.com/*"]
@@ -14,9 +13,25 @@ export const getStyle = () => {
 }
 
 const PlasmoOverlay = () => {
+  const [translate, setTranslate] = useState(null)
+
+  useEffect(() => {
+    chrome.runtime.onMessage.addListener(function ({ type, text }) {
+      setTranslate(text)
+      return true
+    })
+  }, [])
+
   return (
-    <div className="plasmo-z-50 plasmo-flex plasmo-fixed plasmo-top-32 plasmo-right-8">
-      <CountButton />
+    <div className="z-50 fixed top-32 right-8 p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+      <h1 className="mb-2 text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+        Hi I'm your translation bot!
+      </h1>
+      {!!translate?.sourceText && (
+        <h2 className="mb-2 text-2xl font-bold tracking-tight text-gray-600 dark:text-white">
+          {translate?.sourceText} in Bengali is: {translate?.translatedText}
+        </h2>
+      )}
     </div>
   )
 }
