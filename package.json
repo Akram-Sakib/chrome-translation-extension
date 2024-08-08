@@ -33,7 +33,9 @@
       "https://*/*"
     ],
     "permissions": [
-      "contextMenus"
+      "contextMenus",
+      "storage",
+      "scripting"
     ]
   }
 }

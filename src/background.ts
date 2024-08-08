@@ -1,41 +1,26 @@
-import tldr from "wikipedia-tldr"
+import { Storage } from "@plasmohq/storage"
+import { matchLanguage } from "~constants";
+
+const storage = new Storage()
+let sourceLang = 'en';
+let targetLang = 'bn';
+
+storage.watch({
+    translateTo: (c) => {
+        targetLang = c.newValue
+    }
+})
 
 chrome.runtime.onInstalled.addListener(function () {
     chrome.contextMenus.create({
-        title: 'Quick Wiki Lookup For "%s"',
+        title: `Translate "%s to ${matchLanguage(targetLang)}`,
         contexts: ["selection"],
         id: "myContextMenuId"
     })
 })
 
-type WikiTldrThumbnail = {
-    source: string
-    width: number
-    height: number
-}
 
-export type WikiTldr = {
-    query: string
-    type: string
-    title: string
-    displaytitle: string
-    thumbnail: WikiTldrThumbnail
-    originalimage: WikiTldrThumbnail
-    lang: string
-    description: string
-    extract: string
-    extract_html: string
-}
-
-export type WikiMessage = {
-    type: string
-    text: WikiTldr
-}
-
-const trans = async (sourceText: string) => {
-    const sourceLang = 'en';
-    const targetLang = 'bn';
-
+const translate = async (sourceText: string) => {
     const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(sourceText)}`;
 
     const response = await fetch(url);
@@ -45,7 +30,8 @@ const trans = async (sourceText: string) => {
         const data = await response.json()
         translation = {
             sourceText: sourceText,
-            translatedText: data[0][0][0]
+            translatedText: data[0][0][0],
+            targetLang
         }
     }
     return translation
@@ -53,9 +39,9 @@ const trans = async (sourceText: string) => {
 
 
 chrome.contextMenus.onClicked.addListener(async function (info, tab) {
-    const tldrText = await trans(info.selectionText)
+    const text = await translate(info.selectionText)
     chrome.tabs.sendMessage(tab.id, {
         type: "lookup",
-        text: tldrText
-    } as WikiMessage)
+        text: text
+    })
 })
