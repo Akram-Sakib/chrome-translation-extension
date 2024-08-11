@@ -2,10 +2,10 @@ import cssText from "data-text:~style.css"
 import type { PlasmoCSConfig } from "plasmo"
 import { useEffect, useState } from "react"
 
-import { matchLanguage } from "~constants"
+import { matchLanguage, uppercaseFirstLetter } from "~utils/utils"
 
 export const config: PlasmoCSConfig = {
-  matches: ["https://www.plasmo.com/*"], //<all_urls>
+  matches: ["<all_urls>"] // https://www.plasmo.com/*
 }
 
 export const getStyle = () => {
@@ -18,15 +18,11 @@ const PlasmoOverlay = () => {
   const [translate, setTranslate] = useState(null)
 
   useEffect(() => {
-    chrome.runtime.onMessage.addListener(function ({ type, text }) {
+    chrome.runtime.onMessage.addListener(function ({ text }) {
       setTranslate(text)
       return true
     })
   }, [])
-
-  const uppercaseFirstLetter = (string: string): string => {
-    return string.charAt(0).toUpperCase() + string.slice(1)
-  }
 
   return (
     <div className="z-50 fixed top-32 right-8 p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">

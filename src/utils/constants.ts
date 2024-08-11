@@ -48,7 +48,3 @@ export const languages = [
         name: "Chinese",
     },
 ];
-
-export const matchLanguage = (targetLang: string) => languages.find(
-    (lang) => lang.code === targetLang
-)?.name

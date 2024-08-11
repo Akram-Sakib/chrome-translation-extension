@@ -1,19 +1,23 @@
 import { Storage } from "@plasmohq/storage"
-import { matchLanguage } from "~constants";
+import { matchLanguage } from "~utils/utils";
 
 const storage = new Storage()
 let sourceLang = 'en';
-let targetLang = 'bn';
+let targetLang = "bn"
+
 
 storage.watch({
     translateTo: (c) => {
         targetLang = c.newValue
+        chrome.contextMenus.update("myContextMenuId", {
+            title: `Translate "%s to ${matchLanguage(targetLang)}"`
+        })
     }
 })
 
-chrome.runtime.onInstalled.addListener(function () {
+chrome.runtime.onInstalled.addListener(async function () {
     chrome.contextMenus.create({
-        title: `Translate "%s to ${matchLanguage(targetLang)}`,
+        title: `Translate "%s to ${matchLanguage(targetLang)}"`,
         contexts: ["selection"],
         id: "myContextMenuId"
     })
@@ -25,7 +29,7 @@ const translate = async (sourceText: string) => {
 
     const response = await fetch(url);
 
-    let translation
+    let translation;
     if (url) {
         const data = await response.json()
         translation = {

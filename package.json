@@ -34,8 +34,7 @@
     ],
     "permissions": [
       "contextMenus",
-      "storage",
-      "scripting"
+      "storage"
     ]
   }
 }
